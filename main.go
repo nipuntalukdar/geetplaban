@@ -28,6 +28,7 @@ func init() {
 	configFile := CONFIG_DIR + "/configs.yaml"
 	initConfig(configFile)
 	init_logger()
+	init_stats()
 	init_acker()
 	init_disp_reg()
 	init_executor_reg()

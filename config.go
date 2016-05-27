@@ -5,6 +5,7 @@ import (
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"sync"
+	"time"
 )
 
 const (
@@ -16,13 +17,14 @@ const (
 	DEFAULT_NUM_ACKER  = 8
 	DEFAULT_LOG_BCK    = 10
 	LOG_ROLLING_SZ     = 10485760
-	MAX_UNACKED        = 2000
 	MAX_MAX_UNACKED    = 2000000
 	MIN_MAX_UNACKED    = 20
 	TIME_OUT           = 120000
 	CLUSTER_NAME       = "geetplaban"
 	STATS_INTERVAL_SEC = 60
 	DEFAULT_LOG_LEVEL  = "info"
+	MIN_TICK_MILI_SEC  = 1
+	MAX_TICK_MILI_SEC  = 60000
 )
 
 var lolevels = [6]string{"debug", "info", "warning", "error", "fatal", "panic"}
@@ -64,6 +66,17 @@ func (config *Config) GetMaxUnacked() uint32 {
 		max_unacked = MAX_MAX_UNACKED
 	}
 	return uint32(max_unacked)
+}
+
+func (config *Config) GetTickMilli() time.Duration {
+	tick_milli, _ := config.GetIntVal("tick_milli_second")
+	if tick_milli < MIN_TICK_MILI_SEC {
+		tick_milli = MIN_TICK_MILI_SEC
+	}
+	if tick_milli > MAX_TICK_MILI_SEC {
+		tick_milli = MAX_TICK_MILI_SEC
+	}
+	return time.Duration(tick_milli)
 }
 
 func (config *Config) GetLogFile() string {

@@ -317,6 +317,7 @@ func CreateExecutionTree() {
 			} else {
 				tc = tc.Copy()
 				tc.id = uint64(ex_caller.id) << 32
+				tc.stage_id = ex_caller.id
 			}
 			ex_caller.col = tc
 			ex_caller.exc.AddCollector(tc)
@@ -329,7 +330,7 @@ func CreateExecutionTree() {
 			disp := dispreg.GetInstance(dispstage.dispatcher_class)
 			disp_caller.dis = disp
 			disp_caller.id = nextids.NextId()
-			disp_caller.ticker = time.NewTicker(time.Millisecond * 10)
+			disp_caller.ticker = time.NewTicker(time.Millisecond * GetConfig().GetTickMilli())
 			dispcallers = append(dispcallers, disp_caller)
 			if len(dispstage.output_stages) == 0 && len(dispstage.grpd_out_stages) == 0 {
 				continue
@@ -353,6 +354,7 @@ func CreateExecutionTree() {
 				tc = tc.Copy()
 				tc.id = uint64(disp_caller.id) << 32
 				tc.isdisp = disp_caller.id
+				tc.stage_id = disp_caller.id
 			}
 			disp_caller.col = tc
 		}

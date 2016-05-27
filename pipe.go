@@ -27,6 +27,7 @@ type groupedChans struct {
 type TupleCollector struct {
 	lock           *sync.Mutex
 	stage          string
+	stage_id       uint
 	id             uint64
 	out_chans      []chan *OutPut
 	isdisp         uint
@@ -43,6 +44,7 @@ func getKeyHash(key string) uint32 {
 func NewTupleCollector(stage string, id uint, isdisp uint) *TupleCollector {
 	tc := new(TupleCollector)
 	tc.stage = stage
+	tc.stage_id = id
 	tc.id = uint64(id) << 32
 	tc.lock = &sync.Mutex{}
 	tc.isdisp = isdisp
@@ -54,6 +56,7 @@ func (tc *TupleCollector) Copy() *TupleCollector {
 	ret := new(TupleCollector)
 	ret.lock = &sync.Mutex{}
 	ret.stage = tc.stage
+	ret.stage_id = tc.stage_id
 	ret.id = tc.id
 	ret.out_chans = tc.out_chans
 	ret.isdisp = tc.isdisp
@@ -129,6 +132,7 @@ func (tc *TupleCollector) Emit(tuple map[string]interface{}, context interface{}
 	} else {
 		tc.emitTrack(tuple, nil)
 	}
+	Stats().addEmitted(tc.stage_id, 1)
 }
 
 func (tc *TupleCollector) Ack(context interface{}) {
@@ -145,6 +149,7 @@ func (tc *TupleCollector) Fail(context interface{}) {
 	}
 	ackval := context.(*AckValue)
 	GetAcker().SignalFail(ackval.id)
+	Stats().addFailed(tc.stage_id, 1)
 }
 
 func (tc *TupleCollector) AddOutput(chn chan *OutPut) {
