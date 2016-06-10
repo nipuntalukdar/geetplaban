@@ -17,6 +17,8 @@ const (
 	DEFAULT_NUM_ACKER  = 8
 	DEFAULT_LOG_BCK    = 10
 	LOG_ROLLING_SZ     = 10485760
+	MIN_LOG_ROLLING_SZ = 1048576
+	MAX_LOG_ROLLING_SZ = 2147483648
 	MAX_MAX_UNACKED    = 2000000
 	MIN_MAX_UNACKED    = 20
 	TIME_OUT           = 120000
@@ -77,6 +79,17 @@ func (config *Config) GetTickMilli() time.Duration {
 		tick_milli = MAX_TICK_MILI_SEC
 	}
 	return time.Duration(tick_milli)
+}
+
+func (config *Config) GetLogRollSize() int {
+	roll_size, _ := config.GetIntVal("log_rolling_size")
+	if roll_size < MIN_LOG_ROLLING_SZ {
+		roll_size = LOG_ROLLING_SZ
+	}
+	if roll_size > MAX_LOG_ROLLING_SZ {
+		roll_size = LOG_ROLLING_SZ
+	}
+	return roll_size
 }
 
 func (config *Config) GetLogFile() string {

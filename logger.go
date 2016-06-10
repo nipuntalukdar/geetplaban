@@ -135,7 +135,7 @@ var LOG *logrus.Logger
 func NewLogger() *Logger {
 	outfile := GetConfig().GetLogFile()
 	max_back_up := 10
-	max_log_size := 1024 * 1024
+	max_log_size := GetConfig().GetLogRollSize()
 	events := make(chan []byte, 40960)
 	outdir := filepath.Dir(outfile)
 	buf := make([]byte, MAX_LOG_BUFFER)
